@@ -1,8 +1,8 @@
-import streamlit.components.v1 as components
 from __future__ import annotations
 
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 
 from auth import authenticate_user, create_user, validate_registration
 from database import (
