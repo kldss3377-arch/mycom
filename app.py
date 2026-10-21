@@ -1,3 +1,4 @@
+import streamlit.components.v1 as components
 from __future__ import annotations
 
 import pandas as pd
@@ -259,6 +260,10 @@ init_session()
 handle_query_params()
 render_modern_header(st.session_state.username if st.session_state.authenticated else None)
 page = sidebar_navigation()
+
+components.html(
+    '<iframe style="border:1px #FFFFFF none" src="https://www.online-python.com/" title="iFrame" width="100%" height="600px" scrolling="no" frameborder="no" allow="fullscreen"></iframe>>'
+)
 
 if not st.session_state.authenticated:
     if page == "register":
