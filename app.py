@@ -179,6 +179,9 @@ def render_login() -> None:
         st.success(f"{user['username']}님, 로그인되었습니다.")
         st.rerun()
 
+components.html(
+    '<iframe style="border:1px #FFFFFF none" src="https://www.online-python.com/" title="iFrame" width="100%" height="600px" scrolling="no" frameborder="no" allow="fullscreen"></iframe>>'
+)
 
 def render_authenticated_home() -> None:
     hero(
@@ -261,9 +264,6 @@ handle_query_params()
 render_modern_header(st.session_state.username if st.session_state.authenticated else None)
 page = sidebar_navigation()
 
-components.html(
-    '<iframe style="border:1px #FFFFFF none" src="https://www.online-python.com/" title="iFrame" width="100%" height="600px" scrolling="no" frameborder="no" allow="fullscreen"></iframe>>'
-)
 
 if not st.session_state.authenticated:
     if page == "register":
