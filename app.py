@@ -119,9 +119,13 @@ def render_public_home() -> None:
         if c3.button("파이썬IDE", use_container_width=True):
             st.session_state.page = "PythonIDE"
             st.rerun()
-components.html(
-    "<p><span style='text-decoration: line-through double red;'>Oops</span>!</p>"
-)
+
+        # 들여쓰기를 맞춰 left 컬럼 내부에 배치
+        components.html(
+            "<p><span style='text-decoration: line-through double red;'>Oops</span>!</p>",
+            height=40,
+        )
+
     with right:
         with st.container(border=True):
             st.markdown("#### 적용 기능")
@@ -184,6 +188,7 @@ def render_login() -> None:
         st.session_state.page = "home"
         st.success(f"{user['username']}님, 로그인되었습니다.")
         st.rerun()
+
 
 def render_authenticated_home() -> None:
     hero(
