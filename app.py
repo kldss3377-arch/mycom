@@ -56,7 +56,7 @@ def handle_query_params() -> None:
         st.query_params.clear()
         st.rerun()
 
-    if view in {"home", "register", "login", "mydata", "survey"}:
+    if view in {"home", "register", "login", "mydata", "survey", "pythonide"}:
         st.session_state.page = view
         st.query_params.clear()
         st.rerun()
@@ -67,8 +67,15 @@ def sidebar_navigation() -> str:
     st.sidebar.caption("왼쪽 햄버거 버튼으로 메뉴를 열고 닫을 수 있습니다.")
 
     if st.session_state.authenticated:
-        labels = ["홈", "내 데이터", "설문참여", "로그아웃"]
-        key_map = {"홈": "home", "내 데이터": "mydata", "설문참여": "survey", "로그아웃": "logout"}
+        # 로그아웃 아래에 'Pythonide' 추가
+        labels = ["홈", "내 데이터", "설문참여", "로그아웃", "Pythonide"]
+        key_map = {
+            "홈": "home",
+            "내 데이터": "mydata",
+            "설문참여": "survey",
+            "로그아웃": "logout",
+            "Pythonide": "pythonide",
+        }
     else:
         labels = ["홈", "사용자 등록", "로그인"]
         key_map = {"홈": "home", "사용자 등록": "register", "로그인": "login"}
@@ -117,10 +124,9 @@ def render_public_home() -> None:
             st.session_state.page = "login"
             st.rerun()
         if c3.button("파이썬IDE", use_container_width=True):
-            st.session_state.page = "PythonIDE"
+            st.session_state.page = "pythonide"
             st.rerun()
 
-        # 들여쓰기를 맞춰 left 컬럼 내부에 배치
         components.html(
             "<p><span style='text-decoration: line-through double red;'>Oops</span>!</p>",
             height=40,
@@ -266,6 +272,15 @@ def render_mydata() -> None:
             st.info("레거시 데이터가 없습니다.")
 
 
+def render_python_ide() -> None:
+    """온라인 파이썬 IDE를 iframe으로 렌더링"""
+    hero("Python IDE", "브라우저에서 직접 파이썬 코드를 작성하고 실행할 수 있습니다.", "ONLINE IDE")
+    components.html(
+        '<iframe style="border:1px #FFFFFF none" src="https://www.online-python.com/" title="iFrame" width="100%" height="800px" scrolling="no" frameborder="no" allow="fullscreen"></iframe>',
+        height=820,
+    )
+
+
 init_session()
 handle_query_params()
 render_modern_header(st.session_state.username if st.session_state.authenticated else None)
@@ -277,6 +292,8 @@ if not st.session_state.authenticated:
         render_register()
     elif page == "login":
         render_login()
+    elif page == "pythonide":
+        render_python_ide()
     else:
         render_public_home()
 else:
@@ -284,5 +301,7 @@ else:
         render_mydata()
     elif page == "survey":
         render_survey_page(hero)
+    elif page == "pythonide":
+        render_python_ide()
     else:
         render_authenticated_home()
