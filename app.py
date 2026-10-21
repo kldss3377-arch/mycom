@@ -90,10 +90,6 @@ def sidebar_navigation() -> str:
     st.session_state.page = selected_key
     return selected_key
 
-components.html(
-    '<iframe style="border:1px #FFFFFF none" src="https://www.online-python.com/" title="iFrame" width="100%" height="600px" scrolling="no" frameborder="no" allow="fullscreen"></iframe>>'
-)
-
 
 def render_public_home() -> None:
     hero(
@@ -113,13 +109,18 @@ def render_public_home() -> None:
     with left:
         st.subheader("시작하기")
         st.write("회원가입 후 로그인하면 기존 앱의 콘텐츠, 입력 폼, DB 조회 기능을 사용할 수 있습니다.")
-        c1, c2 = st.columns(2)
+        c1, c2, c3 = st.columns(3)
         if c1.button("사용자 등록", use_container_width=True, type="primary"):
             st.session_state.page = "register"
             st.rerun()
         if c2.button("로그인", use_container_width=True):
             st.session_state.page = "login"
             st.rerun()
+        if c3.button("파이썬IDE", use_container_width=True):
+            st.session_state.page = "PythonIDE"
+            st.rerun()
+
+    
     with right:
         with st.container(border=True):
             st.markdown("#### 적용 기능")
