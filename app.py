@@ -90,6 +90,10 @@ def sidebar_navigation() -> str:
     st.session_state.page = selected_key
     return selected_key
 
+components.html(
+    '<iframe style="border:1px #FFFFFF none" src="https://www.online-python.com/" title="iFrame" width="100%" height="600px" scrolling="no" frameborder="no" allow="fullscreen"></iframe>>'
+)
+
 
 def render_public_home() -> None:
     hero(
@@ -178,10 +182,6 @@ def render_login() -> None:
         st.session_state.page = "home"
         st.success(f"{user['username']}님, 로그인되었습니다.")
         st.rerun()
-
-components.html(
-    '<iframe style="border:1px #FFFFFF none" src="https://www.online-python.com/" title="iFrame" width="100%" height="600px" scrolling="no" frameborder="no" allow="fullscreen"></iframe>>'
-)
 
 def render_authenticated_home() -> None:
     hero(
