@@ -120,6 +120,9 @@ def render_public_home() -> None:
             st.session_state.page = "PythonIDE"
             st.rerun()
 
+components.html(
+    "<p><span style='text-decoration: line-through double red;'>Oops</span>!</p>"
+)
     
     with right:
         with st.container(border=True):
