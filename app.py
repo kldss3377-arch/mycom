@@ -119,10 +119,8 @@ def render_public_home() -> None:
         if c3.button("파이썬IDE", use_container_width=True):
             st.session_state.page = "PythonIDE"
             st.rerun()
-
 components.html(
     "<p><span style='text-decoration: line-through double red;'>Oops</span>!</p>"
-)
     
     with right:
         with st.container(border=True):
