@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import pandas as pd
 import streamlit as st
-import streamlit.components.v1 as components
 
 from auth import authenticate_user, create_user, validate_registration
 from database import (
@@ -25,6 +24,36 @@ st.set_page_config(
 init_db()
 migrate_legacy_csv()
 load_css()
+
+
+def fix_top_layout() -> None:
+    """상단 헤더 글씨 잘림 해결
+    - 원인: Streamlit 기본 상단 툴바(Share·☆·✏·GitHub·⋮, 높이 약 60px)가 화면 위에 '고정'되어 있어
+      본문 맨 위에 있는 우리 헤더(Streamlit Auth WebApp / 사용자명 / 로그아웃)를 덮어 버림
+    - 해결: 본문 시작 위치(padding-top)를 툴바 높이만큼 아래로 내려 줌
+    - load_css() 뒤에 호출해서 ui.py의 CSS 설정보다 우선 적용되도록 함
+    """
+    st.markdown(
+        """
+        <style>
+        /* 본문 컨테이너 상단 여백 확보 (Streamlit 버전별 클래스명 모두 대응) */
+        .block-container,
+        [data-testid="stMainBlockContainer"],
+        [data-testid="block-container"] {
+            padding-top: 4.5rem !important;
+        }
+        /* 헤더 iframe/카드가 잘리지 않도록 넘침 허용 */
+        [data-testid="stIFrame"],
+        [data-testid="stHtml"] {
+            overflow: visible !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+fix_top_layout()
 
 
 # ─────────────────────────────────────────────
@@ -160,10 +189,7 @@ def render_public_home() -> None:
             st.session_state.page = "pythonide"
             st.rerun()
 
-        components.html(
-            "<p><span style='text-decoration: line-through double red;'>Oops</span>!</p>",
-            height=40,
-        )
+        st.html("<p><span style='text-decoration: line-through double red;'>Oops</span>!</p>")
 
     with right:
         with st.container(border=True):
@@ -314,12 +340,8 @@ def render_embed_page(key: str) -> None:
     # 일부 사이트는 보안정책(X-Frame-Options)으로 iframe 표시를 막을 수 있어 새 창 링크도 함께 제공
     st.link_button(f"↗ {cfg['title']} 새 창에서 열기", cfg["url"])
 
-    components.html(
-        f'<iframe style="border:1px #FFFFFF none" src="{cfg["url"]}" title="iFrame" '
-        f'width="100%" height="{cfg["height"]}px" scrolling="no" frameborder="no" '
-        f'allow="fullscreen"></iframe>',
-        height=cfg["height"] + 20,
-    )
+    # st.components.v1.html 은 폐지 예정 → 새 API인 st.iframe 사용 (URL을 직접 전달)
+    st.iframe(cfg["url"], height=cfg["height"])
 
 
 def render_python_ide() -> None:
