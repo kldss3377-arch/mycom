@@ -27,6 +27,37 @@ migrate_legacy_csv()
 load_css()
 
 
+# ─────────────────────────────────────────────
+# iframe으로 띄울 외부 페이지 설정 (한 곳에서 관리)
+#   - 새 외부 페이지를 추가하려면 여기에 한 줄만 추가하면 됩니다.
+# ─────────────────────────────────────────────
+EMBED_PAGES = {
+    "pythonide": {
+        "title": "Python IDE",
+        "desc": "브라우저에서 직접 파이썬 코드를 작성하고 실행할 수 있습니다.",
+        "badge": "ONLINE IDE",
+        "url": "https://www.online-python.com/",
+        "height": 800,
+    },
+    "blockly": {
+        "title": "BLOCKLY Game",
+        "desc": "블록을 조립하며 코딩의 기본 개념(순서·반복·조건)을 게임으로 익힙니다.",
+        "badge": "CODING GAME",
+        "url": "https://blockly.games/?lang=ko",
+        "height": 600,
+    },
+    "tetris": {
+        "title": "TETRIS Game",
+        "desc": "잠깐 머리를 식히는 테트리스 게임입니다.",
+        "badge": "MINI GAME",
+        "url": "https://play.tetris.com/",
+        "height": 600,
+    },
+}
+
+VALID_VIEWS = {"home", "register", "login", "mydata", "survey", *EMBED_PAGES.keys()}
+
+
 def init_session() -> None:
     defaults = {
         "authenticated": False,
@@ -56,7 +87,7 @@ def handle_query_params() -> None:
         st.query_params.clear()
         st.rerun()
 
-    if view in {"home", "register", "login", "mydata", "survey", "pythonide"}:
+    if view in VALID_VIEWS:
         st.session_state.page = view
         st.query_params.clear()
         st.rerun()
@@ -67,14 +98,16 @@ def sidebar_navigation() -> str:
     st.sidebar.caption("왼쪽 햄버거 버튼으로 메뉴를 열고 닫을 수 있습니다.")
 
     if st.session_state.authenticated:
-        # 로그아웃 아래에 'Pythonide' 추가
-        labels = ["홈", "내 데이터", "설문참여", "로그아웃", "Pythonide"]
+        # 로그아웃 아래 'Pythonide', 그 아래 'BLOCKLY Game', 'TETRIS Game' 추가
+        labels = ["홈", "내 데이터", "설문참여", "로그아웃", "Pythonide", "BLOCKLY Game", "TETRIS Game"]
         key_map = {
             "홈": "home",
             "내 데이터": "mydata",
             "설문참여": "survey",
             "로그아웃": "logout",
             "Pythonide": "pythonide",
+            "BLOCKLY Game": "blockly",
+            "TETRIS Game": "tetris",
         }
     else:
         labels = ["홈", "사용자 등록", "로그인"]
@@ -142,7 +175,8 @@ def render_public_home() -> None:
                 "- 로그인 전/후 세션 분리\n"
                 "- 접이식 Streamlit Sidebar\n"
                 "- Tailwind + Alpine.js 헤더 컴포넌트\n"
-                "- Flexbox 기반 반응형 CSS"
+                "- Flexbox 기반 반응형 CSS\n"
+                "- Python IDE · BLOCKLY · TETRIS iframe 임베드"
             )
 
 
@@ -272,13 +306,32 @@ def render_mydata() -> None:
             st.info("레거시 데이터가 없습니다.")
 
 
-def render_python_ide() -> None:
-    """온라인 파이썬 IDE를 iframe으로 렌더링"""
-    hero("Python IDE", "브라우저에서 직접 파이썬 코드를 작성하고 실행할 수 있습니다.", "ONLINE IDE")
+def render_embed_page(key: str) -> None:
+    """EMBED_PAGES 설정을 읽어 외부 사이트를 iframe으로 렌더링 (공통 함수)"""
+    cfg = EMBED_PAGES[key]
+    hero(cfg["title"], cfg["desc"], cfg["badge"])
+
+    # 일부 사이트는 보안정책(X-Frame-Options)으로 iframe 표시를 막을 수 있어 새 창 링크도 함께 제공
+    st.link_button(f"↗ {cfg['title']} 새 창에서 열기", cfg["url"])
+
     components.html(
-        '<iframe style="border:1px #FFFFFF none" src="https://www.online-python.com/" title="iFrame" width="100%" height="800px" scrolling="no" frameborder="no" allow="fullscreen"></iframe>',
-        height=820,
+        f'<iframe style="border:1px #FFFFFF none" src="{cfg["url"]}" title="iFrame" '
+        f'width="100%" height="{cfg["height"]}px" scrolling="no" frameborder="no" '
+        f'allow="fullscreen"></iframe>',
+        height=cfg["height"] + 20,
     )
+
+
+def render_python_ide() -> None:
+    render_embed_page("pythonide")
+
+
+def render_blockly_game() -> None:
+    render_embed_page("blockly")
+
+
+def render_tetris_game() -> None:
+    render_embed_page("tetris")
 
 
 init_session()
@@ -303,5 +356,9 @@ else:
         render_survey_page(hero)
     elif page == "pythonide":
         render_python_ide()
+    elif page == "blockly":
+        render_blockly_game()
+    elif page == "tetris":
+        render_tetris_game()
     else:
         render_authenticated_home()
